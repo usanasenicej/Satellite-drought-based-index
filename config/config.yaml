@@ -1,0 +1,85 @@
+study:
+  name: "Agricultural Drought Early-Warning Index (ADEWI) for Rwanda"
+  country: Rwanda
+  provinces:
+    - Eastern
+    - Southern
+  start_date: "2018-01-01"
+  end_date: "2024-12-31"
+  temporal_resolution: "16D"  # aligned with MODIS MOD13Q1
+  crs: "EPSG:4326"
+
+paths:
+  data_raw: data/raw
+  data_processed: data/processed
+  results: results
+  figures: results/figures
+  tables: results/tables
+  maps: results/maps
+
+variables:
+  ndvi:
+    dataset: MODIS/061/MOD13Q1
+    band: NDVI
+    scale: 0.0001
+    unit: "unitless"
+  evi:
+    dataset: MODIS/061/MOD13Q1
+    band: EVI
+    scale: 0.0001
+    unit: "unitless"
+  rainfall:
+    dataset: UCSB-CHG/CHIRPS/PENTAD
+    band: precipitation
+    unit: "mm"
+  soil_moisture:
+    dataset: NASA/FLDAS/NOAH01/C/GL/M/V001
+    band: SoilMoi00_10cm_tavg
+    unit: "m3/m3"
+  lst:
+    dataset: MODIS/061/MOD11A2
+    band: LST_Day_1km
+    scale: 0.02
+    unit: "K"
+
+# ADEWI is vegetation-independent so it can lead NDVI.
+# Negative ADEWI = drier / hotter than normal (drought-favourable).
+weights:
+  adewi:
+    rainfall: 0.40
+    soil_moisture: 0.35
+    lst: 0.25          # subtracted (high LST = drought)
+  cadi:
+    ndvi: 0.20
+    evi: 0.15
+    rainfall: 0.25
+    soil_moisture: 0.25
+    lst: 0.15          # subtracted
+
+drought:
+  # Standardized anomaly thresholds (McKee-style)
+  classes:
+    Watch: -0.5
+    Mild: -1.0
+    Moderate: -1.5
+    Severe: -2.0
+  ndvi_event_threshold: -1.0
+  adewi_event_threshold: -1.0
+  min_event_steps: 2          # consecutive 16-day composites
+  max_gap_steps: 1
+
+validation:
+  known_drought_periods:
+    - {label: "2016-17 Eastern drought", start: "2016-09-01", end: "2017-03-31"}
+    - {label: "2022 Season A dry spell", start: "2021-10-01", end: "2022-02-28"}
+    - {label: "2023 Eastern dry conditions", start: "2023-01-01", end: "2023-04-30"}
+  crop_stats_file: data/raw/nisr_crop_production_placeholder.csv
+
+synthetic:
+  enabled: true
+  seed: 42
+  n_lat: 24
+  n_lon: 28
+  # Target mean ADEWI lead (weeks) baked into the generator so the
+  # pipeline can be demonstrated before real GEE/DE Africa exports exist.
+  typical_lead_composites: 3   # 3 x 16-day ≈ 6 weeks

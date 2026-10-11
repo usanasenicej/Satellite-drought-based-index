@@ -1,0 +1,24 @@
+[project]
+name = "adewi-rwanda"
+version = "0.1.0"
+description = "Satellite-based Agricultural Drought Early-Warning Index for Rwanda"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "scipy>=1.10",
+  "matplotlib>=3.7",
+  "seaborn>=0.12",
+  "pyyaml>=6.0",
+  "openpyxl>=3.1",
+  "streamlit>=1.28",
+  "plotly>=5.18",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
