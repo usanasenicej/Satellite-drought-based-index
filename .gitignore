@@ -8,6 +8,7 @@ venv/
 results/figures/*.png
 results/tables/*.csv
 results/tables/*.xlsx
+# Note: results/ outputs are regenerated from source — not committed
 results/run_report.json
 data/processed/*.csv
 .DS_Store
