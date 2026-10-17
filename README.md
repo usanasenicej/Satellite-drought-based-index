@@ -316,8 +316,3 @@ ADEWI explores a practical question in climate-informed agriculture: whether env
 
 By providing a reproducible workflow for index construction, event comparison, and validation, the project aims to support further investigation into satellite-based agricultural drought monitoring in Rwanda.
 
-**The intended contribution is a testable methodology, not a predetermined result.** Whether ADEWI provides a useful early-warning advantage remains an empirical question.
-
----
-
-*Independent student research project. Methods, findings, and conclusions should be reported transparently and supported by verifiable data and reproducible analysis.*
