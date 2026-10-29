@@ -44,36 +44,49 @@ variables:
 
 # ADEWI is vegetation-independent so it can lead NDVI.
 # Negative ADEWI = drier / hotter than normal (drought-favourable).
+# Target lead time: 3–6 weeks ahead of NDVI drought onset (brief §2).
 weights:
   adewi:
     rainfall: 0.40
     soil_moisture: 0.35
     lst: 0.25          # subtracted (high LST = drought)
   cadi:
-    ndvi: 0.20
+    # Brief formula: 0.30·Z_NDVI + 0.30·Z_rain + 0.20·Z_SM − 0.20·Z_LST
+    # EVI added at 0.15 weight; total ≈ 1.15 (unnormalised — consistent with literature).
+    ndvi: 0.30
     evi: 0.15
-    rainfall: 0.25
-    soil_moisture: 0.25
-    lst: 0.15          # subtracted
+    rainfall: 0.30
+    soil_moisture: 0.20
+    lst: 0.20          # subtracted
 
 drought:
-  # Standardized anomaly thresholds (McKee-style)
+  # Standardized anomaly thresholds matching the research brief:
+  #   Normal  ≥ −0.5
+  #   Mild    −0.5 to −1.0
+  #   Moderate −1.0 to −1.5
+  #   Severe  −1.5 to −2.0
+  #   Extreme < −2.0
   classes:
-    Watch: -0.5
-    Mild: -1.0
-    Moderate: -1.5
-    Severe: -2.0
+    Mild: -0.5
+    Moderate: -1.0
+    Severe: -1.5
+    Extreme: -2.0
   ndvi_event_threshold: -1.0
   adewi_event_threshold: -1.0
   min_event_steps: 2          # consecutive 16-day composites
   max_gap_steps: 1
 
 validation:
+  # Note: 2016-17 period pre-dates study window (2018-2024) — included for
+  # contextual reference; in_study_window will be False in output tables.
   known_drought_periods:
     - {label: "2016-17 Eastern drought", start: "2016-09-01", end: "2017-03-31"}
     - {label: "2022 Season A dry spell", start: "2021-10-01", end: "2022-02-28"}
     - {label: "2023 Eastern dry conditions", start: "2023-01-01", end: "2023-04-30"}
+    - {label: "2020 Short dry spell", start: "2020-01-15", end: "2020-03-10"}
+    - {label: "2018 Mid-season dry period", start: "2018-06-15", end: "2018-08-31"}
   crop_stats_file: data/raw/nisr_crop_production_placeholder.csv
+  crop_types: [maize, beans]   # primary food crops in Eastern/Southern Rwanda
 
 synthetic:
   enabled: true
