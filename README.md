@@ -2,12 +2,39 @@
 
 **Independent Research Project | Remote Sensing · Climate Analytics · Agricultural Drought Monitoring**
 
-Development of a Satellite-Based Agricultural Drought Early-Warning Index for Rwanda: Assessing Lead Time of Combined Vegetation, Rainfall and Soil Moisture Anomalies
+Development of a Satellite-Based Agricultural Drought Early-Warning Index for Rwanda: Assessing the Lead Time of Combined Vegetation, Rainfall and Soil Moisture Anomalies in the Eastern and Southern Provinces
 
 **Study area:** Eastern and Southern Provinces, Rwanda  
 **Study period:** January 2018 – December 2024  
-**Research level:** Independent student research  
-**Intended publication:** *Rwanda Journal of Agricultural Sciences* or a relevant University of Rwanda agriculture journal
+**Research level:** Independent student research (with possible university mentor)  
+**Intended publication:** *Rwanda Journal of Agricultural Sciences* (RJAS) or a relevant University of Rwanda agriculture journal
+
+---
+
+## Quick Start (5 minutes)
+
+```powershell
+# 1. Clone the repository and navigate into it
+cd D:\Codes\Backend\Research
+
+# 2. Create virtual environment and install dependencies
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -e .
+
+# 3. Run the full analysis pipeline (uses synthetic data until you add real GEE exports)
+python -m adewi
+
+# 4. Launch the interactive Streamlit explorer
+streamlit run app/streamlit_app.py
+
+# 5. Optional: run weight sensitivity analysis
+python scripts/sensitivity_analysis.py
+```
+
+The pipeline writes figures to `results/figures/`, tables to `results/tables/`,
+and a JSON run report to `results/run_report.json`.
 
 ---
 
@@ -255,28 +282,35 @@ The application is an exploratory interface, not a validated operational drought
 
 ## Jupyter notebooks
 
-The notebooks in `notebooks/` provide a step-by-step view of the analysis, from loading data through generating final figures.
+The notebooks in `notebooks/` provide a step-by-step view of the analysis,
+from loading data through generating final figures.
 
-The notebook sequence includes:
+The notebook sequence covers all five stages of the analysis pipeline:
 
-- `01_data_loading.ipynb`
-- `05_final_figures.ipynb`
+| Notebook | Stage | Description |
+|---|---|---|
+| `01_data_loading.ipynb` | Phase 1 | Load satellite and climate data; clip to study area |
+| `02_preprocessing.ipynb` | Phase 1–2 | Clean, interpolate, add calendar; compute Z-score anomalies |
+| `03_combined_index.ipynb` | Phase 2–3 | Build ADEWI and CADI; classify drought severity |
+| `04_lead_time_analysis.ipynb` | Phase 3 | Detect events; match lead times; seasonal breakdown |
+| `05_final_figures.ipynb` | Phase 4 | Publication-ready maps, graphs, and tables |
 
-Intermediate notebooks cover the stages implemented in the repository. Use the main command, `python -m adewi`, when a complete configured run is preferred.
+Use `python -m adewi` when a complete configured run is preferred over notebook-by-notebook execution.
 
 ## Suggested research workflow
 
 | Phase | Activities |
 |---|---|
-| 1. Literature review | Review research on agricultural drought indicators, rainfall anomalies, vegetation indices, soil moisture, and drought monitoring in Rwanda and East Africa. |
-| 2. Data acquisition | Obtain the required environmental datasets and document their provenance, units, resolution, and coverage. |
-| 3. Quality control | Inspect missingness, outliers, seasonal coverage, spatial aggregation, and product-specific quality flags. |
-| 4. Index construction | Run the pipeline and inspect anomaly distributions, index behavior, and drought-event timing. |
-| 5. Sensitivity analysis | Test alternative index weights, anomaly baselines, drought thresholds, and event-matching rules. |
-| 6. Validation | Compare detected events with independent drought records and suitable agricultural statistics, where available. |
-| 7. Interpretation | Report lead-time distributions, missed events, false alarms, uncertainty, and regional differences. |
-| 8. Manuscript preparation | Populate the manuscript with verified observational results, methods, figures, limitations, and reproducibility details. |
-| 9. Demonstration | Use the Streamlit prototype to communicate the method and findings without presenting it as an operational warning system. |
+| 0. Preparation | Create GEE and DE Africa accounts. Read 3–4 key papers (especially the Rwanda SPEI+VHI study). Decide exact study area and time period. |
+| 1. Data acquisition | Export provincial time series from GEE using `scripts/gee_export_code_editor.js`. Document data provenance, units, resolution, and coverage. |
+| 2. Preprocessing & QC | Inspect missingness, outliers, seasonal coverage, spatial aggregation, and product-specific quality flags. Run `python -m adewi` with real data. |
+| 3. Anomaly calculation | Verify Z-score distributions per variable and province. Check seasonal climatology in `data/processed/climatology.csv`. |
+| 4. Index construction | Inspect ADEWI and CADI behavior in Notebooks 3–5 and `results/figures/fig11_cadi_vs_adewi.png`. |
+| 5. Sensitivity analysis | Run `python scripts/sensitivity_analysis.py`. Compare lead times across weight scenarios. |
+| 6. Validation | Compare detected events with independent drought records. Obtain official NISR crop statistics and replace the placeholder file. |
+| 7. Interpretation | Report lead-time distributions, false alarms, missed events, uncertainty, and regional differences between Eastern and Southern Provinces. |
+| 8. Manuscript preparation | Populate `paper/manuscript_template.md` with verified observational results, figures, and tables. Aim for 4,000–7,000 words. |
+| 9. Demonstration | Use the Streamlit prototype to communicate findings. Clarify it is a research prototype, not an operational service. |
 
 ## Scientific integrity and limitations
 
