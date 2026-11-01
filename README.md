@@ -1,225 +1,175 @@
+
 # Agricultural Drought Early-Warning Index (ADEWI) for Rwanda
 
-**Independent Research Project | Remote Sensing · Climate Analytics · Agricultural Drought Monitoring**
+**A satellite-based research project combining climate and remote-sensing data to investigate early detection of agricultural drought.**
 
-Development of a Satellite-Based Agricultural Drought Early-Warning Index for Rwanda: Assessing the Lead Time of Combined Vegetation, Rainfall and Soil Moisture Anomalies in the Eastern and Southern Provinces
+**Research areas:** Remote Sensing · Climate Analytics · Agricultural Drought Monitoring
 
-**Study area:** Eastern and Southern Provinces, Rwanda  
-**Study period:** January 2018 – December 2024  
-**Research level:** Independent student research (with possible university mentor)  
-**Intended publication:** *Rwanda Journal of Agricultural Sciences* (RJAS) or a relevant University of Rwanda agriculture journal
+## Research Overview
 
----
+Agricultural drought can threaten crop productivity, food security, and rural livelihoods. However, vegetation-based indicators may respond only after crops have already experienced water stress.
 
-## Quick Start (5 minutes)
+This project investigates whether combining rainfall, soil moisture, and land-surface temperature anomalies can provide earlier indications of agricultural drought than vegetation-based indicators alone.
 
-```powershell
-# 1. Clone the repository and navigate into it
-cd D:\Codes\Backend\Research
+The project develops the **Agricultural Drought Early-Warning Index (ADEWI)** and a complementary Combined Agricultural Drought Index (CADI), supported by a reproducible Python analysis pipeline and an interactive Streamlit application.
 
-# 2. Create virtual environment and install dependencies
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -e .
+The study focuses on Rwanda's Eastern and Southern Provinces, using environmental time-series data spanning January 2018 through December 2024.
 
-# 3. Run the full analysis pipeline (uses synthetic data until you add real GEE exports)
-python -m adewi
+### Research Question
 
-# 4. Launch the interactive Streamlit explorer
-streamlit run app/streamlit_app.py
+Can a multi-variable index based on rainfall, soil moisture, and land-surface temperature anomalies detect agricultural drought earlier than vegetation-based indicators in Eastern and Southern Rwanda?
 
-# 5. Optional: run weight sensitivity analysis
-python scripts/sensitivity_analysis.py
-```
+### Research Objectives
 
-The pipeline writes figures to `results/figures/`, tables to `results/tables/`,
-and a JSON run report to `results/run_report.json`.
-
----
-
-## Overview
-
-Agricultural drought threatens crop productivity, food security, and rural livelihoods. However, vegetation-based drought indicators may respond only after crops have already experienced water stress.
-
-This project investigates whether combining rainfall, soil moisture, and land-surface temperature anomalies can identify potential agricultural drought conditions earlier than vegetation-based indicators alone.
-
-The project develops an analytical pipeline for calculating the **Agricultural Drought Early-Warning Index (ADEWI)** and comparing its drought signals with vegetation-based indicators across Rwanda's Eastern and Southern Provinces from 2018 to 2024.
-
-The central research question is:
-
-> Can a multi-variable index based on rainfall, soil moisture, and land-surface temperature anomalies detect agricultural drought earlier than vegetation-based indicators in Eastern and Southern Rwanda?
-
-The analysis focuses on drought signal timing, lead time, temporal behavior, data quality, and the potential usefulness of combining multiple environmental indicators.
-
-**Research objective:** Evaluate whether the proposed index provides earlier drought signals than vegetation-based indicators. The existence and magnitude of any lead time must be established using observational data rather than assumed in advance.
-
-## Research objectives
-
-1. Develop a reproducible pipeline for processing environmental time-series data for Eastern and Southern Rwanda.
+1. Develop a reproducible workflow for processing environmental time-series data.
 2. Calculate standardized anomalies for vegetation, rainfall, soil moisture, and land-surface temperature.
-3. Construct ADEWI and a complementary Combined Agricultural Drought Index (CADI).
-4. Compare ADEWI drought signals with vegetation-based drought signals and estimate detection lead time.
-5. Evaluate the robustness of the results through data-quality checks, sensitivity analysis, and independent validation where suitable data are available.
-6. Produce reproducible figures, tables, and a demonstration application for exploring the results.
+3. Construct ADEWI and CADI using environmental anomaly measurements.
+4. Compare drought signal timing and estimate potential detection lead time.
+5. Evaluate the sensitivity and reliability of the proposed indices using appropriate validation data.
+6. Produce reproducible figures, tables, and an interactive research application.
+
+## Study Scope
+
+| Attribute | Description |
+|---|---|
+| Study area | Eastern and Southern Provinces, Rwanda |
+| Study period | January 2018 – December 2024 |
+| Research domain | Remote sensing, climate analytics, agricultural drought monitoring |
+| Research level | Independent student research |
+| Intended publication | Rwanda Journal of Agricultural Sciences or a relevant University of Rwanda agriculture journal |
 
 ## Methodology
 
-### 1. Environmental data
+### 1. Environmental Data
 
-The pipeline is designed to work with the following variables:
+The analysis is designed to use satellite-derived and climate-related environmental measurements.
 
-| Variable | Role in the analysis | Potential data source |
+| Variable | Purpose | Potential Data Source |
 |---|---|---|
 | NDVI | Measures vegetation greenness and condition | MODIS |
 | EVI | Provides a complementary vegetation indicator | MODIS |
 | Rainfall | Captures precipitation deficits | CHIRPS |
-| Soil moisture | Represents water availability in the soil | FLDAS or another documented soil-moisture product |
+| Soil moisture | Represents water availability in the soil | FLDAS or another documented product |
 | Land-surface temperature (LST) | Captures thermal conditions associated with water stress | MODIS |
 
-The workflow uses provincial time-series data for the Eastern and Southern Provinces. Dataset selection, temporal resolution, spatial resolution, quality screening, and aggregation methods should be documented in the final study.
+The workflow uses provincial time-series data for the Eastern and Southern Provinces.
 
-Data-source availability does not itself establish that a dataset has already been downloaded, processed, or validated.
+Dataset selection, spatial and temporal resolution, quality screening, and aggregation methods must be documented before the results are interpreted.
 
-### 2. Standardized anomalies
+### 2. Standardized Anomalies
 
-Environmental variables are converted into standardized anomalies to make their deviations from expected conditions comparable.
+Environmental variables are converted into standardized anomalies to make deviations from expected conditions comparable.
 
-A conventional Z-score is:
+The conventional Z-score is:
 
-\[
+$$
 Z_t = \frac{X_t-\mu}{\sigma}
-\]
+$$
 
-where:
+Where:
 
-- \(X_t\) is the observed value at time \(t\).
-- \(\mu\) is the reference-period mean.
-- \(\sigma\) is the reference-period standard deviation.
+- $X_t$ is the observed value at time $t$.
+- $\mu$ is the reference-period mean.
+- $\sigma$ is the reference-period standard deviation.
 
-For seasonal environmental data, the reference distribution should account for seasonal variation. The exact temporal grouping, baseline period, missing-data treatment, and minimum sample requirements must be specified in the implementation and documented in the manuscript.
+For seasonal environmental data, the reference distribution should account for seasonal variation.
 
-For rainfall and soil moisture, negative anomalies indicate drier-than-reference conditions. For NDVI and EVI, negative anomalies indicate below-reference vegetation greenness. Positive LST anomalies can indicate unusually warm surface conditions.
+Negative rainfall and soil-moisture anomalies indicate drier-than-reference conditions. Negative NDVI and EVI anomalies indicate below-reference vegetation greenness, while positive LST anomalies can indicate unusually warm surface conditions.
 
 ### 3. Agricultural Drought Early-Warning Index (ADEWI)
 
-The initial ADEWI formulation combines rainfall, soil moisture, and land-surface temperature anomalies:
+ADEWI combines rainfall, soil moisture, and land-surface temperature anomalies:
 
-\[
+$$
 \mathrm{ADEWI}
 =0.40Z_{\mathrm{rain}}
 +0.35Z_{\mathrm{SM}}
 -0.25Z_{\mathrm{LST}}
-\]
+$$
 
-The formulation assigns a higher weight to rainfall, followed by soil moisture and land-surface temperature. The negative temperature coefficient reflects the expectation that unusually high surface temperatures can accompany agricultural water stress.
+The initial formulation assigns the highest weight to rainfall, followed by soil moisture and land-surface temperature.
 
-**Important:** These weights are proposed starting values, not established optimal coefficients. Their suitability should be evaluated through sensitivity analysis and, where possible, independent validation.
+The negative temperature coefficient reflects the expectation that unusually high surface temperatures can accompany agricultural water stress.
 
-ADEWI excludes vegetation variables so that its signals can be compared with vegetation-based indicators without directly incorporating the same vegetation measurements into both sides of the comparison.
+**These coefficients are proposed starting values, not established optimal weights.** Their suitability must be evaluated through sensitivity analysis and, where possible, independent validation.
+
+ADEWI excludes vegetation variables so that its drought signals can be compared with vegetation-based indicators without directly incorporating the same vegetation measurements into both sides of the comparison.
 
 ### 4. Combined Agricultural Drought Index (CADI)
 
 CADI incorporates vegetation indicators alongside rainfall, soil moisture, and land-surface temperature.
 
-The implementation uses a weighted combination of NDVI, EVI, rainfall, soil moisture, and LST anomalies. Its exact coefficients and sign conventions should be taken from the project configuration and documented alongside the ADEWI formulation.
+The implementation uses a weighted combination of NDVI, EVI, rainfall, soil moisture, and LST anomalies.
 
-CADI represents a broader assessment of agricultural drought conditions. Because it includes vegetation variables, it should not be treated as an independent predictor when evaluating lead time against NDVI.
+Its exact coefficients and sign conventions should be taken from the project configuration and documented alongside the ADEWI formulation.
 
-### 5. Drought classification
+Because CADI includes vegetation variables, it is intended as a broader assessment of agricultural drought conditions rather than an independent predictor for evaluating lead time against NDVI.
 
-The initial classification thresholds are:
+### 5. Drought Classification
 
-| Index value | Initial classification |
+The initial drought classification thresholds are:
+
+| Index Value | Classification |
 |---|---|
-| \(>-0.5\) | No drought signal under the proposed classification |
-| \(-1.0 < x \leq -0.5\) | Mild |
-| \(-1.5 < x \leq -1.0\) | Moderate |
-| \(-2.0 < x \leq -1.5\) | Severe |
-| \(x \leq -2.0\) | Extreme |
+| $>-0.5$ | No drought signal |
+| $-1.0 < x \leq -0.5$ | Mild |
+| $-1.5 < x \leq -1.0$ | Moderate |
+| $-2.0 < x \leq -1.5$ | Severe |
+| $x \leq -2.0$ | Extreme |
 
-These thresholds are provisional analytical choices. They should be checked against the implementation, relevant literature, and the statistical properties of the index before being used for scientific interpretation.
+These thresholds are provisional analytical choices and should be evaluated against the implementation, relevant literature, and the statistical properties of the index.
 
-### 6. Lead-time analysis
+### 6. Lead-Time Analysis
 
 The pipeline compares the timing of ADEWI threshold crossings with vegetation-based drought signals.
 
-Lead time is measured in weeks:
+Lead time is calculated as:
 
-\[
+$$
 L=t_{\mathrm{vegetation}}-t_{\mathrm{ADEWI}}
-\]
+$$
 
-where:
+Where:
 
-- \(t_{\mathrm{ADEWI}}\) is the date of the qualifying ADEWI signal.
-- \(t_{\mathrm{vegetation}}\) is the date of the corresponding vegetation-based signal.
-- \(L>0\) indicates that ADEWI signaled earlier.
-- \(L=0\) indicates simultaneous signals.
-- \(L<0\) indicates that ADEWI signaled later.
+- $t_{\mathrm{ADEWI}}$ is the date of the qualifying ADEWI signal.
+- $t_{\mathrm{vegetation}}$ is the date of the corresponding vegetation-based signal.
+- $L>0$ indicates that ADEWI signaled earlier.
+- $L=0$ indicates simultaneous signals.
+- $L<0$ indicates that ADEWI signaled later.
 
-A valid lead-time estimate requires an explicit event-matching method, consistent temporal resolution, defined thresholds, and rules for unmatched events. Earlier threshold crossing alone does not prove successful forecasting: detected events should also be evaluated against independent drought evidence, where available.
+A valid lead-time estimate requires consistent temporal resolution, explicit event-matching rules, and defined thresholds.
 
----
+Earlier threshold crossing alone does not establish successful forecasting. Detected events should also be evaluated against independent drought evidence where suitable data are available.
 
-## Repository features
+## Repository Features
 
-The repository provides an end-to-end analysis workflow intended to support reproducible research.
+The repository provides an end-to-end research workflow for:
 
 - Environmental time-series loading and preprocessing.
 - Standardized anomaly calculation.
 - ADEWI and CADI construction.
 - Drought classification and signal detection.
-- Lead-time analysis.
+- Lead-time analysis and event matching.
 - Data-quality checks and summary statistics.
 - Publication-oriented figures and tables.
-- Excel workbook and machine-readable CSV outputs.
-- JSON run report.
-- Streamlit demonstration application.
+- Excel workbooks and machine-readable CSV outputs.
+- JSON run reports.
+- Interactive Streamlit exploration.
 - Jupyter notebooks for inspecting individual analysis stages.
 
 The exact outputs depend on the configured workflow and the input data available.
 
-## Data status: synthetic versus observed
+## Research Status
 
-**Synthetic data are for testing, not scientific evidence.**
+**This repository is a research prototype, not a validated operational drought-warning service.**
 
-A fresh clone is designed to run using a synthetic environmental dataset representing plausible seasonal patterns and drought-like disturbances. This allows the software workflow to be tested before external datasets are obtained.
+The pipeline is designed to run with synthetic environmental data until observational datasets are obtained and configured.
 
-Synthetic data may include simulated rainfall and soil-moisture variation, vegetation responses, and dry-period scenarios. These patterns are assumptions for testing; they are not observations of actual drought events in Rwanda.
+Synthetic data allow the software workflow to be tested, but they are not observations of actual drought events in Rwanda.
 
-Never use synthetic outputs as evidence of real drought occurrence, measured lead time, agricultural impacts, or index performance in a research manuscript.
+Consequently, synthetic outputs must not be used as evidence of real drought occurrence, measured lead time, agricultural impacts, or index performance.
 
-### Obtaining observational data
-
-1. Set up a [Google Earth Engine](https://earthengine.google.com/) account and review the relevant dataset access requirements.
-2. Run `scripts/gee_export_code_editor.js` in the Earth Engine Code Editor, or use `scripts/gee_export_timeseries.py` after configuring and authenticating the Earth Engine Python environment.
-3. Export and inspect the resulting time series.
-4. Save the prepared file to `data/raw/provincial_timeseries.csv`.
-5. Verify column names, units, dates, missing values, quality flags, and province labels.
-6. Run the analysis again and inspect the provenance of the generated outputs.
-
-Expected columns:
-
-```text
-time, province, ndvi, evi, rainfall, soil_moisture, lst
-```
-
-The `province` field should identify the Eastern or Southern Province. Variable units, time intervals, and missing-value conventions must be consistent with the loader's expectations.
-
-The loader's current behavior determines whether a file-based dataset is tagged as observed. **A software label is not proof of observational provenance.** Preserve source metadata and independently verify the origin of all inputs before reporting results.
-
-### Agricultural production validation
-
-The file `data/raw/nisr_crop_production_placeholder.csv` is a placeholder, not a verified source of official agricultural statistics.
-
-Before conducting crop-production validation, replace it with documented data from the National Institute of Statistics of Rwanda (NISR), the Ministry of Agriculture and Animal Resources (MINAGRI), or another appropriate authoritative source.
-
-Document crop type, geographic coverage, reporting period, units, and any mismatch between annual production statistics and the index's spatial or temporal resolution.
-
-Do not claim crop validation until the data have been obtained, processed, and analyzed.
-
----
+The scientific conclusions of this project must follow from actual data and analyses performed.
 
 ## Installation
 
@@ -231,7 +181,7 @@ Do not claim crop validation until the data have been obtained, processed, and a
 - Optional: Google Earth Engine access for exporting observational data.
 - Optional: Jupyter for notebook-based analysis.
 
-### Windows setup
+### Windows Setup
 
 Open PowerShell and navigate to the repository directory:
 
@@ -247,7 +197,7 @@ pip install -e .
 
 If PowerShell blocks virtual-environment activation, use an approved environment-specific alternative or configure the execution policy according to your system's security requirements.
 
-## Running the analysis
+## Running the Analysis
 
 Run the main pipeline:
 
@@ -257,77 +207,111 @@ python -m adewi
 
 The workflow processes the available inputs and writes the configured outputs.
 
-### Expected outputs
+### Expected Outputs
 
 | Path | Purpose |
 |---|---|
 | `results/figures/` | Generated time-series, lead-time, mapping, and validation figures where supported by the available data |
-| `results/tables/` | Summary statistics, lead-time events, quality checks, drought-event tables, and Excel outputs |
-| `data/processed/adewi_index_timeseries.csv` | Processed time series containing the calculated indices |
-| `results/run_report.json` | Machine-readable summary of the run, including reported metrics and output files |
+| `results/tables/` | Summary statistics, lead-time events, quality checks, and Excel outputs |
+| `data/processed/adewi_index_timeseries.csv` | Processed time series containing calculated indices |
+| `results/run_report.json` | Machine-readable summary of the run and generated outputs |
 
 Output filenames and the availability of individual figures depend on the implementation and the inputs supplied.
 
-## Streamlit demonstration
+## Interactive Exploration
 
-Launch the interactive application:
+Launch the Streamlit application:
 
 ```powershell
 streamlit run app/streamlit_app.py
 ```
 
-The prototype is designed to support exploration of the selected province and year, ADEWI and NDVI behavior, drought classifications, and detected lead-time events.
+The prototype is designed to support exploration of:
+
+- The selected province and year.
+- ADEWI and NDVI behavior.
+- Drought classifications.
+- Detected lead-time events.
 
 The application is an exploratory interface, not a validated operational drought-warning service.
 
-## Jupyter notebooks
+## Obtaining Observational Data
 
-The notebooks in `notebooks/` provide a step-by-step view of the analysis,
-from loading data through generating final figures.
+The project is designed to support data acquisition through Google Earth Engine.
 
-The notebook sequence covers all five stages of the analysis pipeline:
+1. Set up a [Google Earth Engine](https://earthengine.google.com/) account and review the relevant dataset access requirements.
+2. Run `scripts/gee_export_code_editor.js` in the Earth Engine Code Editor, or use `scripts/gee_export_timeseries.py` after configuring and authenticating the Earth Engine Python environment.
+3. Export and inspect the resulting time series.
+4. Save the prepared file to `data/raw/provincial_timeseries.csv`.
+5. Verify column names, units, dates, missing values, quality flags, and province labels.
+6. Run the analysis again and inspect the provenance of the generated outputs.
+
+### Expected Data Format
+
+```text
+time, province, ndvi, evi, rainfall, soil_moisture, lst
+```
+
+The `province` field should identify the Eastern or Southern Province.
+
+Variable units, time intervals, and missing-value conventions must be consistent with the loader's expectations.
+
+A software label indicating that data are observed is not proof of observational provenance. Preserve source metadata and independently verify the origin of all inputs before reporting results.
+
+### Agricultural Production Validation
+
+The file `data/raw/nisr_crop_production_placeholder.csv` is a placeholder, not a verified source of official agricultural statistics.
+
+Before conducting crop-production validation, replace it with documented data from the National Institute of Statistics of Rwanda (NISR), the Ministry of Agriculture and Animal Resources (MINAGRI), or another appropriate authoritative source.
+
+Document crop type, geographic coverage, reporting period, units, and any mismatch between annual production statistics and the index's spatial or temporal resolution.
+
+Do not claim crop validation until the data have been obtained, processed, and analyzed.
+
+## Jupyter Notebooks
+
+The notebooks in `notebooks/` provide a step-by-step view of the analysis.
 
 | Notebook | Stage | Description |
 |---|---|---|
-| `01_data_loading.ipynb` | Phase 1 | Load satellite and climate data; clip to study area |
-| `02_preprocessing.ipynb` | Phase 1–2 | Clean, interpolate, add calendar; compute Z-score anomalies |
-| `03_combined_index.ipynb` | Phase 2–3 | Build ADEWI and CADI; classify drought severity |
-| `04_lead_time_analysis.ipynb` | Phase 3 | Detect events; match lead times; seasonal breakdown |
-| `05_final_figures.ipynb` | Phase 4 | Publication-ready maps, graphs, and tables |
+| `01_data_loading.ipynb` | Phase 1 | Load environmental data and clip to the study area |
+| `02_preprocessing.ipynb` | Phase 1–2 | Clean data, handle missing values, and compute anomalies |
+| `03_combined_index.ipynb` | Phase 2–3 | Construct ADEWI and CADI and classify drought severity |
+| `04_lead_time_analysis.ipynb` | Phase 3 | Detect events, match lead times, and conduct seasonal analysis |
+| `05_final_figures.ipynb` | Phase 4 | Generate maps, graphs, and tables |
 
 Use `python -m adewi` when a complete configured run is preferred over notebook-by-notebook execution.
 
-## Suggested research workflow
+## Suggested Research Workflow
 
 | Phase | Activities |
 |---|---|
-| 0. Preparation | Create GEE and DE Africa accounts. Read 3–4 key papers (especially the Rwanda SPEI+VHI study). Decide exact study area and time period. |
-| 1. Data acquisition | Export provincial time series from GEE using `scripts/gee_export_code_editor.js`. Document data provenance, units, resolution, and coverage. |
-| 2. Preprocessing & QC | Inspect missingness, outliers, seasonal coverage, spatial aggregation, and product-specific quality flags. Run `python -m adewi` with real data. |
-| 3. Anomaly calculation | Verify Z-score distributions per variable and province. Check seasonal climatology in `data/processed/climatology.csv`. |
-| 4. Index construction | Inspect ADEWI and CADI behavior in Notebooks 3–5 and `results/figures/fig11_cadi_vs_adewi.png`. |
-| 5. Sensitivity analysis | Run `python scripts/sensitivity_analysis.py`. Compare lead times across weight scenarios. |
-| 6. Validation | Compare detected events with independent drought records. Obtain official NISR crop statistics and replace the placeholder file. |
-| 7. Interpretation | Report lead-time distributions, false alarms, missed events, uncertainty, and regional differences between Eastern and Southern Provinces. |
-| 8. Manuscript preparation | Populate `paper/manuscript_template.md` with verified observational results, figures, and tables. Aim for 4,000–7,000 words. |
-| 9. Demonstration | Use the Streamlit prototype to communicate findings. Clarify it is a research prototype, not an operational service. |
+| 1. Data acquisition | Export environmental time series and document data provenance, units, resolution, and coverage. |
+| 2. Preprocessing | Inspect missingness, outliers, seasonal coverage, spatial aggregation, and quality flags. |
+| 3. Anomaly calculation | Verify Z-score distributions and seasonal climatology. |
+| 4. Index construction | Inspect ADEWI and CADI behavior and compare their drought signals. |
+| 5. Sensitivity analysis | Run `python scripts/sensitivity_analysis.py` and compare lead times across weight scenarios. |
+| 6. Validation | Compare detected events with independent drought records and obtain documented crop-production statistics where appropriate. |
+| 7. Interpretation | Report lead-time distributions, false alarms, missed events, uncertainty, and regional differences. |
+| 8. Manuscript preparation | Populate `paper/manuscript_template.md` with verified observational results, figures, and tables. |
+| 9. Demonstration | Use the Streamlit prototype to communicate findings while clarifying its research status. |
 
-## Scientific integrity and limitations
+## Scientific Integrity and Limitations
 
-This project is an independent research effort. Its scientific conclusions must follow from the actual data and analyses performed.
+The interpretation of this research depends on the quality of the underlying datasets and analytical decisions.
 
 Key considerations include:
 
-- **Data provenance:** Clearly distinguish synthetic test data from observational datasets and retain the metadata needed to reproduce the analysis.
-- **Index design:** Justify the direction and weights of each component and test whether conclusions change under reasonable alternatives.
-- **Seasonality:** Use an appropriate reference distribution for seasonal variables and document how the baseline is defined.
-- **Temporal resolution:** Ensure that lead-time comparisons use compatible timestamps and an explicit event-matching procedure.
+- **Data provenance:** Distinguish synthetic test data from observational datasets and retain metadata needed to reproduce the analysis.
+- **Index design:** Justify the direction and weights of each component and evaluate alternative formulations.
+- **Seasonality:** Use an appropriate reference distribution for seasonal variables and document the baseline.
+- **Temporal resolution:** Ensure that lead-time comparisons use compatible timestamps and explicit event-matching procedures.
 - **Independent validation:** Do not treat agreement with an index component as independent validation when that same component contributes to the index.
-- **Spatial aggregation:** Provincial averages can hide localized drought conditions. A provincial time series does not provide the same information as a pixel-level drought map.
+- **Spatial aggregation:** Provincial averages can hide localized drought conditions.
 - **Agricultural interpretation:** Vegetation stress and meteorological dryness are related but distinct. A drought signal does not, by itself, establish crop losses or causation.
 - **Uncertainty:** Report data gaps, sensitivity to parameter choices, unmatched events, false alarms, and other limitations.
 - **Generalizability:** Results from two provinces and the 2018–2024 study period should not automatically be generalized to all of Rwanda or future climate conditions.
-- **Operational readiness:** A research prototype should not be described as a validated early-warning service without appropriate evaluation, reliability testing, and independent evidence.
+- **Operational readiness:** A research prototype should not be described as a validated early-warning service without appropriate evaluation and independent evidence.
 
 ## Reproducibility
 
@@ -342,11 +326,18 @@ For every reported result, retain:
 - Software dependencies and configuration settings.
 - Generated tables, figures, and run reports.
 
-Dataset documentation and citations should be included in the manuscript. Relevant sources include [Google Earth Engine](https://earthengine.google.com/), [MODIS](https://modis.gsfc.nasa.gov/), [CHIRPS](https://www.chc.ucsb.edu/data/chirps), [NASA FLDAS](https://ldas.gsfc.nasa.gov/fldas), and [FAO GAUL](https://data.apps.fao.org/map/catalog/srv/eng/catalog.search#/metadata/9c35ba3e-3e9b-4a4c-9f5e-7a4c7b9a4a5a), as applicable to the actual datasets used.
+Relevant data documentation includes:
 
-## Research direction
+- [Google Earth Engine](https://earthengine.google.com/)
+- [MODIS](https://modis.gsfc.nasa.gov/)
+- [CHIRPS](https://www.chc.ucsb.edu/data/chirps)
+- [NASA FLDAS](https://ldas.gsfc.nasa.gov/fldas)
+- [FAO GAUL](https://data.apps.fao.org/map/catalog/srv/eng/catalog.search#/metadata/9c35ba3e-3e9b-4a4c-9f5e-7a4c7b9a4a5a)
 
-ADEWI explores a practical question in climate-informed agriculture: whether environmental signals can be combined to identify potentially adverse agricultural conditions before vegetation indicators show a comparable response.
+Include citations for the datasets actually used in the analysis and in the research manuscript.
 
-By providing a reproducible workflow for index construction, event comparison, and validation, the project aims to support further investigation into satellite-based agricultural drought monitoring in Rwanda.
+## Research Direction
 
+ADEWI explores whether environmental signals can be combined to identify potentially adverse agricultural conditions before vegetation indicators show a comparable response.
+
+By providing a reproducible workflow for index construction, event comparison, and validation, this project aims to support further investigation into satellite-based agricultural drought monitoring in Rwanda.
