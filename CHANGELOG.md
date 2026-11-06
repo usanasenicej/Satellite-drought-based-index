@@ -8,6 +8,22 @@ Follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 
 ## [Unreleased]
 
+### Added
+- **Interactive Geospatial Map** in Streamlit App (Tab 3): interactive district-level coordinate visualization displaying study districts and drought severity.
+- **Functional District Explorer** in Streamlit App: provides district location details, coordinates, and province context.
+- **Export & Download buttons** in Streamlit: one-click CSV downloads for filtered time-series data, detected drought events, and custom sensitivity scenarios.
+- **Side-by-side sensitivity comparison chart**: interactive Plotly visualization contrasting baseline vs custom weight scenarios.
+- **Data caching (`@st.cache_data`)**: optimized Streamlit app performance by caching pipeline data loading.
+- **Console script entry point**: `adewi` command defined in `pyproject.toml` pointing to `adewi.run_pipeline:main`.
+- **Optional dependency groups**: added `geo` and `dev` dependencies in `pyproject.toml`.
+- **Enhanced configuration loading & validation**: relative path resolution for validation files (`crop_stats_file`), configuration validation, and LRU caching in `config.py`.
+- **Comprehensive NumPy-style docstrings**: complete documentation across `config.py`, `anomalies.py`, `preprocessing.py`, `regions.py`, `synthetic_data.py`, and `run_pipeline.py`.
+- **Quick Start section in README.md** with simple setup, running, and exploration commands.
+
+### Changed
+- Bumped project version to `0.2.0` across `pyproject.toml` and `src/adewi/__init__.py`.
+- Cleaned and consolidated CHANGELOG sections.
+
 ---
 
 ## [0.2.0] — 2026-10-29
@@ -34,10 +50,15 @@ Follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 - `config/config.yaml`: two additional validation periods (2020 short dry spell, 2018 mid-season dry)
 - `config/config.yaml`: `crop_types` field (maize, beans) for documentation
 - `validation.default_crop_placeholder()` now includes schematic bean production data
-- README: full confirmed study title with "…Assessing the Lead Time…in the Eastern and Southern Provinces"
-- README: Quick Start section (5 commands from clone to running app)
-- README: complete notebook table with stage descriptions
-- README: 9-phase research workflow matching the research brief
+- `tests/test_anomalies.py` — unit tests for climatology and Z-score computation
+- `tests/test_combined_index.py` — unit tests for ADEWI/CADI index construction and drought classification
+- `tests/test_preprocessing.py` — unit tests for gap interpolation, physical clipping, and calendar attachment
+- `tests/test_validation.py` — unit tests for known-period hit-rate and crop-correlation helpers
+- `tests/conftest.py` — shared pytest fixtures (minimal synthetic DataFrame)
+- `scripts/sensitivity_analysis.py` — equal-weight and leave-one-out sensitivity tests for ADEWI
+- `LICENSE` — MIT licence for open reproducibility
+- `CHANGELOG.md` — this file
+- `CONTRIBUTING.md` — contributor guide
 
 ### Changed
 - **Drought classification thresholds** corrected to match research brief exactly:
@@ -51,17 +72,6 @@ Follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
   ESA CCI soil moisture documented alternative, and post-download checklist
 - Visualization figures use `constrained_layout`, `fill_between`, `bar_label`, and accessible palettes
 - `README.md` notebook listing updated from partial list to complete table
-
-### Added
-- `tests/test_anomalies.py` — unit tests for climatology and Z-score computation
-- `tests/test_combined_index.py` — unit tests for ADEWI/CADI index construction and drought classification
-- `tests/test_preprocessing.py` — unit tests for gap interpolation, physical clipping, and calendar attachment
-- `tests/test_validation.py` — unit tests for known-period hit-rate and crop-correlation helpers
-- `tests/conftest.py` — shared pytest fixtures (minimal synthetic DataFrame)
-- `scripts/sensitivity_analysis.py` — equal-weight and leave-one-out sensitivity tests for ADEWI
-- `LICENSE` — MIT licence for open reproducibility
-- `CHANGELOG.md` — this file
-- `CONTRIBUTING.md` — contributor guide
 
 ---
 
