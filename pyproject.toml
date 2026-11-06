@@ -1,9 +1,21 @@
 [project]
 name = "adewi-rwanda"
-version = "0.1.0"
+version = "0.2.0"
 description = "Satellite-based Agricultural Drought Early-Warning Index for Rwanda"
 readme = "README.md"
 requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+  {name = "ADEWI-Rwanda Research Contributors"}
+]
+keywords = [
+  "remote-sensing",
+  "drought-monitoring",
+  "early-warning-system",
+  "climate-analytics",
+  "rwanda",
+  "agriculture"
+]
 dependencies = [
   "numpy>=1.24",
   "pandas>=2.0",
@@ -16,6 +28,9 @@ dependencies = [
   "plotly>=5.18",
 ]
 
+[project.scripts]
+adewi = "adewi.run_pipeline:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
@@ -23,6 +38,13 @@ where = ["src"]
 dev = [
   "pytest>=7.4",
   "pytest-cov>=4.1",
+]
+geo = [
+  "xarray>=2023.1",
+  "rioxarray>=0.14",
+  "geopandas>=0.14",
+  "rasterio>=1.3",
+  "earthengine-api>=0.1.370",
 ]
 
 [tool.pytest.ini_options]
