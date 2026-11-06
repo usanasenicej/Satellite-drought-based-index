@@ -11,6 +11,20 @@ from .synthetic_data import VARIABLES
 
 
 def interpolate_gaps(df: pd.DataFrame, limit: int = 2) -> pd.DataFrame:
+    """Linearly interpolate missing values within short data gaps per province.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input observations with 'province' and variable columns.
+    limit : int, default 2
+        Maximum number of consecutive NaN values to fill in both directions.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with short gaps interpolated.
+    """
     out = df.copy()
     for prov, g in out.groupby("province"):
         idx = g.index
@@ -20,6 +34,24 @@ def interpolate_gaps(df: pd.DataFrame, limit: int = 2) -> pd.DataFrame:
 
 
 def clip_physical_ranges(df: pd.DataFrame) -> pd.DataFrame:
+    """Clamp environmental variables to physically plausible terrestrial bounds.
+
+    Bounds applied:
+    - ndvi, evi: [0.0, 1.0] (vegetation index range)
+    - rainfall: >= 0.0 mm
+    - soil_moisture: [0.0, 0.6] m3/m3 (volumetric water content)
+    - lst: [250.0, 340.0] Kelvin (~ -23°C to 67°C)
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input observations.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with values clipped to physical limits.
+    """
     out = df.copy()
     out["ndvi"] = out["ndvi"].clip(0.0, 1.0)
     out["evi"] = out["evi"].clip(0.0, 1.0)
@@ -30,6 +62,25 @@ def clip_physical_ranges(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_calendar(df: pd.DataFrame) -> pd.DataFrame:
+    """Enrich time-series with agricultural calendar metadata for Rwanda.
+
+    Adds:
+    - year, month, week, doy (day of year)
+    - season:
+        - "A": Season A (September through January)
+        - "B": Season B (February through June)
+        - "C": Season C (July and August marshland/dry season)
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input observations with a 'time' datetime column.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame enriched with calendar columns.
+    """
     out = df.copy()
     out["year"] = out["time"].dt.year
     out["month"] = out["time"].dt.month
@@ -45,6 +96,19 @@ def add_calendar(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def quality_summary(df: pd.DataFrame) -> pd.DataFrame:
+    """Generate quality-control summary metrics per province.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input preprocessed observations.
+
+    Returns
+    -------
+    pd.DataFrame
+        Table summarizing timestep counts, date ranges, and missingness
+        percentage for each variable.
+    """
     rows = []
     for prov, g in df.groupby("province"):
         rec: dict[str, Any] = {"province": prov, "n_timesteps": len(g)}
@@ -57,6 +121,23 @@ def quality_summary(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def preprocess(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Execute complete data preprocessing and quality control workflow.
+
+    Clips physical ranges, interpolates short missingness gaps, attaches
+    calendar/seasonal identifiers, and compiles quality assurance metrics.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Raw time-series observations.
+
+    Returns
+    -------
+    tuple of (pd.DataFrame, pd.DataFrame)
+        A tuple containing:
+        - clean: Cleaned and calendar-annotated DataFrame.
+        - summary: Quality assurance summary table.
+    """
     clean = clip_physical_ranges(interpolate_gaps(df))
     clean = add_calendar(clean)
     summary = quality_summary(clean)

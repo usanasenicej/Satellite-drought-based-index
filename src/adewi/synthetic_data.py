@@ -55,6 +55,25 @@ def _drought_forcing(dates: pd.DatetimeIndex) -> np.ndarray:
 
 
 def generate_cube(cfg: dict[str, Any]) -> dict[str, Any]:
+    """Generate a multi-variable synthetic spatial-temporal environmental data cube.
+
+    Simulates realistic bimodal seasonality (Season A/B), spatial aridity gradients
+    between Eastern and Southern Rwanda, and transient drought episodes with realistic
+    lagged soil-moisture and vegetation responses.
+
+    Parameters
+    ----------
+    cfg : dict of str -> Any
+        Study configuration containing 'study', 'synthetic', and spatial settings.
+
+    Returns
+    -------
+    dict of str -> Any
+        Data cube dictionary containing temporal coordinates ('time'), spatial coordinates
+        ('lat', 'lon'), 3D variable arrays (time, lat, lon) for 'ndvi', 'evi', 'rainfall',
+        'soil_moisture', and 'lst', as well as spatial masks ('study_mask', 'eastern_mask',
+        'southern_mask').
+    """
     syn = cfg["synthetic"]
     rng = np.random.default_rng(syn["seed"])
     start = cfg["study"]["start_date"]

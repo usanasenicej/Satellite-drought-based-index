@@ -178,6 +178,10 @@ def run(config_path: str | None = None) -> dict:
 
 
 def main() -> None:
+    """CLI entry point for the ADEWI analysis pipeline.
+
+    Parses command-line arguments and triggers pipeline execution via :func:`run`.
+    """
     parser = argparse.ArgumentParser(description="Run the Rwanda ADEWI analysis pipeline")
     parser.add_argument("--config", default=None, help="Path to config YAML")
     args = parser.parse_args()

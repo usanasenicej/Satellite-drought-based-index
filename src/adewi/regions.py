@@ -1,7 +1,7 @@
-"""Study-area geometry (approximate bounding boxes for Eastern and Southern Rwanda).
+"""Study-area geometry and district definitions for Eastern and Southern Rwanda.
 
-When real GeoJSON from HDX / geoBoundaries is placed in data/raw, load_boundaries()
-will use it. Until then, published bounding boxes are used for masking synthetic grids.
+Defines spatial bounds, district centroids, and provincial masks used in spatial
+data extraction, raster simulations, and geographic mapping.
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-# Approximate bounding boxes (WGS84) for provincial masking of coarse grids.
+# Approximate bounding boxes (WGS84 EPSG:4326) for provincial masking of coarse grids.
 PROVINCE_BBOX = {
     "Eastern": {"lon_min": 30.05, "lon_max": 30.90, "lat_min": -2.35, "lat_max": -1.05},
     "Southern": {"lon_min": 29.35, "lon_max": 30.15, "lat_min": -2.85, "lat_max": -1.75},
@@ -20,12 +20,13 @@ PROVINCE_BBOX = {
 
 RWANDA_BBOX = {"lon_min": 28.85, "lon_max": 30.90, "lat_min": -2.85, "lat_max": -1.05}
 
-# Representative districts used for maps / Streamlit filters.
+# Administrative districts of Eastern and Southern Provinces
 DISTRICTS = {
     "Eastern": ["Bugesera", "Gatsibo", "Kayonza", "Kirehe", "Ngoma", "Nyagatare", "Rwamagana"],
     "Southern": ["Gisagara", "Huye", "Kamonyi", "Muhanga", "Nyamagabe", "Nyanza", "Nyaruguru", "Ruhango"],
 }
 
+# District administrative centroids (latitude, longitude) in WGS84
 DISTRICT_CENTROIDS = {
     "Nyagatare": (-1.30, 30.33),
     "Gatsibo": (-1.58, 30.45),
@@ -46,7 +47,22 @@ DISTRICT_CENTROIDS = {
 
 
 def province_mask(lats: np.ndarray, lons: np.ndarray, province: str) -> np.ndarray:
-    """Boolean mask of shape (n_lat, n_lon) for a province bbox."""
+    """Create a boolean mask of shape (n_lat, n_lon) for a province bounding box.
+
+    Parameters
+    ----------
+    lats : np.ndarray
+        1D array of latitude coordinates.
+    lons : np.ndarray
+        1D array of longitude coordinates.
+    province : str
+        Province name ('Eastern' or 'Southern').
+
+    Returns
+    -------
+    np.ndarray
+        2D boolean array where True indicates points within the provincial bounding box.
+    """
     box = PROVINCE_BBOX[province]
     lat2d, lon2d = np.meshgrid(lats, lons, indexing="ij")
     return (
@@ -58,6 +74,18 @@ def province_mask(lats: np.ndarray, lons: np.ndarray, province: str) -> np.ndarr
 
 
 def load_district_table(cfg: dict[str, Any] | None = None) -> pd.DataFrame:
+    """Build a tabular summary of study districts with coordinates.
+
+    Parameters
+    ----------
+    cfg : dict of str -> Any, optional
+        Project configuration dictionary (currently unused, reserved for custom paths).
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with columns ['province', 'district', 'lat', 'lon'].
+    """
     rows = []
     for prov, districts in DISTRICTS.items():
         for d in districts:
@@ -66,7 +94,19 @@ def load_district_table(cfg: dict[str, Any] | None = None) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def try_load_geojson(path: Path) -> Any:
+def try_load_geojson(path: Path) -> Any | None:
+    """Attempt to load a GeoJSON file if it exists, returning parsed data or None.
+
+    Parameters
+    ----------
+    path : Path
+        Path to the candidate GeoJSON boundary file.
+
+    Returns
+    -------
+    dict or None
+        Parsed GeoJSON dictionary, or None if the file is missing or invalid.
+    """
     if not path.exists():
         return None
     try:
