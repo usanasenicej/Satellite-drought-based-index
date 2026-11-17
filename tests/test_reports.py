@@ -8,7 +8,7 @@ def test_reports_generator(tmp_path):
     df = pd.DataFrame({"Province": ["Eastern", "Southern"], "Lead_Weeks": [6.2, 5.8]})
     tex = generate_latex_table(df, "Lead Time Summary", "tab:lead_time")
     assert "\\begin{table}" in tex
-    assert "Lead_Weeks" in tex
+    assert "Eastern" in tex
 
     summary = generate_executive_summary_markdown(
         {"mean_lead_weeks": 6.1, "success_rate": 0.88},
