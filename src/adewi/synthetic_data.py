@@ -11,6 +11,8 @@ Design:
 - Rainfall and soil-moisture deficits lead vegetation decline by ~3 sixteen-day
   composites (~6 weeks), which is the phenomenon ADEWI is meant to capture.
 - LST rises as soil moisture falls.
+- Inter-annual climate oscillation proxies (ENSO/IOD).
+- Sensor cloud gap injection support.
 """
 
 from __future__ import annotations
@@ -33,9 +35,20 @@ def _seasonal_cycle(doy: np.ndarray) -> np.ndarray:
     return 0.55 + 0.28 * np.cos(rad - 2.0) + 0.22 * np.cos(2 * rad - 0.4)
 
 
+def _enso_iod_cycle(dates: pd.DatetimeIndex) -> np.ndarray:
+    """Inter-annual teleconnection oscillation (ENSO / Indian Ocean Dipole proxy).
+
+    Simulates 3-5 year cycles affecting East African precipitation anomalies.
+    """
+    days = (dates - dates[0]).days.values
+    # ~3.5 year cycle (1278 days) and ~5 year cycle (1826 days)
+    cycle = 0.25 * np.sin(2 * np.pi * days / 1278.0) + 0.15 * np.cos(2 * np.pi * days / 1826.0)
+    return cycle
+
+
 def _drought_forcing(dates: pd.DatetimeIndex) -> np.ndarray:
-    """Negative pulses during documented/plausible dry spells (2018–2024 window)."""
-    f = np.zeros(len(dates))
+    """Negative pulses during documented/plausible dry spells (2018–2024 window) plus ENSO/IOD oscillation."""
+    f = _enso_iod_cycle(dates).copy()
     episodes = [
         ("2021-10-01", "2022-02-15", -1.35),
         ("2023-01-10", "2023-04-20", -1.05),
@@ -52,6 +65,21 @@ def _drought_forcing(dates: pd.DatetimeIndex) -> np.ndarray:
         window = window / window.max()
         f[m] += amp * window
     return f
+
+
+def inject_cloud_gaps(
+    arr: np.ndarray,
+    gap_rate: float = 0.05,
+    seed: int = 42,
+) -> np.ndarray:
+    """Simulate cloudy pixel dropouts common in optical remote sensing."""
+    if gap_rate <= 0:
+        return arr
+    rng = np.random.default_rng(seed)
+    mask = rng.random(size=arr.shape) < gap_rate
+    corrupted = arr.copy()
+    corrupted[mask] = np.nan
+    return corrupted
 
 
 def generate_cube(cfg: dict[str, Any]) -> dict[str, Any]:
