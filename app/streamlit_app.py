@@ -265,13 +265,14 @@ st.write("")
 # Application Tabs
 # ---------------------------------------------------------------------------
 
-tab_ts, tab_lt, tab_map, tab_sens, tab_sim, tab_about = st.tabs(
+tab_ts, tab_lt, tab_map, tab_sens, tab_sim, tab_export, tab_about = st.tabs(
     [
         "📈 Time Series",
         "⏱️ Lead-Time Analysis",
         "🗺️ Drought Map & Spatial Explorer",
         "⚙️ Sensitivity Analysis",
         "🔮 Scenario Simulator",
+        "📦 Data Package",
         "ℹ️ About & Methodology",
     ]
 )
@@ -734,6 +735,47 @@ with tab_sim:
         )
         fig_gauge.update_layout(height=260, margin=dict(l=20, r=20, t=40, b=20))
         st.plotly_chart(fig_gauge, use_container_width=True)
+
+# ═══════════════════════════════════════════════════════════════════════════
+# TAB 6 — Data Package & Bundle Exporter
+# ═══════════════════════════════════════════════════════════════════════════
+
+with tab_export:
+    st.subheader("Automated Research Data Package")
+    st.markdown("Download full research pipeline datasets, district GeoJSON, and execution reports.")
+
+    exp_c1, exp_c2 = st.columns(2)
+    with exp_c1:
+        st.markdown("**1. Complete Timeseries Dataset (CSV)**")
+        st.download_button(
+            label="📥 Download Full Timeseries (CSV)",
+            data=prov_df.to_csv(index=False).encode("utf-8"),
+            file_name="adewi_timeseries_all_provinces.csv",
+            mime="text/csv",
+        )
+
+        st.markdown("**2. District GeoJSON Boundaries**")
+        import json as _json
+        geojson_data = generate_rwanda_geojson()
+        st.download_button(
+            label="🗺️ Download Rwanda 30-District GeoJSON",
+            data=_json.dumps(geojson_data, indent=2).encode("utf-8"),
+            file_name="rwanda_30_districts.geojson",
+            mime="application/json",
+        )
+
+    with exp_c2:
+        st.markdown("**3. Provenance & Run Metadata**")
+        run_rep_path = Path(cfg["paths"]["results"]) / "run_report.json"
+        if run_rep_path.exists():
+            st.download_button(
+                label="📄 Download Latest Pipeline Run Report (JSON)",
+                data=run_rep_path.read_bytes(),
+                file_name="adewi_run_report.json",
+                mime="application/json",
+            )
+        else:
+            st.info("Run the pipeline (`adewi run`) to generate execution run_report.json")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # TAB 6 — About & Methodology
