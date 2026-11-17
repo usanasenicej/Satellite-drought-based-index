@@ -86,7 +86,15 @@ The **Combined Agricultural Drought Index** (status) is:
 \mathrm{CADI} = 0.20\,Z_{\mathrm{NDVI}} + 0.15\,Z_{\mathrm{EVI}} + 0.25\,Z_{\mathrm{rain}} + 0.25\,Z_{\mathrm{SM}} - 0.15\,Z_{\mathrm{LST}}
 \]
 
-Weights sum to 1. Equal-weight and leave-one-variable-out tests can be reported as sensitivity. Negative values indicate drought-favourable conditions. Classes follow: Mild < −0.5, Moderate < −1.0, Severe < −1.5, Extreme < −2.0.
+Weights sum to 1. Equal-weight, PCA-driven, and leave-one-variable-out tests can be reported as sensitivity. Negative values indicate drought-favourable conditions. Classes follow: Mild < −0.5, Moderate < −1.0, Severe < −1.5, Extreme < −2.0.
+
+### 3.4.1 Complementary Standardized Indices and Machine Learning Benchmarks
+
+To establish rigorous scientific comparison against established international methodologies:
+1. **Kogan's Indices (VCI, TCI, VHI):** Computed per DOY composite bin across the historical reference record to isolate biological stress from thermal stress.
+2. **SPEI and Climatic Water Balance ($D = P - PET$):** Incorporating Hargreaves potential evapotranspiration to model cumulative atmospheric moisture demand.
+3. **Machine Learning Early-Warning Prediction:** Predictive classification models (Random Forest, Gradient Boosting, Logistic Regression) evaluating 16-to-48 day forward forecasting accuracy, ROC-AUC, and precision-recall dynamics.
+
 
 ### 3.5 Lead-time definition (core contribution)
 
