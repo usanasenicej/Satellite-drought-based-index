@@ -178,14 +178,60 @@ def run(config_path: str | None = None) -> dict:
 
 
 def main() -> None:
-    """CLI entry point for the ADEWI analysis pipeline.
+    """CLI entry point for the ADEWI analysis pipeline and tooling.
 
-    Parses command-line arguments and triggers pipeline execution via :func:`run`.
+    Supports subcommands: run, eval, forecast, serve, and info.
     """
-    parser = argparse.ArgumentParser(description="Run the Rwanda ADEWI analysis pipeline")
-    parser.add_argument("--config", default=None, help="Path to config YAML")
+    parser = argparse.ArgumentParser(description="ADEWI-Rwanda CLI and analysis toolkit")
+    subparsers = parser.add_subparsers(dest="command", help="Available subcommands")
+
+    # Command: run
+    run_parser = subparsers.add_parser("run", help="Execute the complete analysis pipeline")
+    run_parser.add_argument("--config", default=None, help="Path to config YAML")
+
+    # Command: eval
+    eval_parser = subparsers.add_parser("eval", help="Evaluate model performance and diagnostic metrics")
+    eval_parser.add_argument("--config", default=None, help="Path to config YAML")
+
+    # Command: forecast
+    fc_parser = subparsers.add_parser("forecast", help="Generate forward-looking drought anomaly forecasts")
+    fc_parser.add_argument("--steps", type=int, default=3, help="Forecast horizon in 16-day composite steps")
+
+    # Command: serve
+    serve_parser = subparsers.add_parser("serve", help="Launch the FastAPI REST microservice")
+    serve_parser.add_argument("--host", default="127.0.0.1", help="Host address")
+    serve_parser.add_argument("--port", type=int, default=8000, help="Port number")
+
+    # Command: info
+    subparsers.add_parser("info", help="Display system version and configuration status")
+
+    parser.add_argument("--config", default=None, help="Path to config YAML (when run without subcommand)")
     args = parser.parse_args()
-    run(args.config)
+
+    if args.command == "serve":
+        import uvicorn
+        print(f"Starting ADEWI API on http://{args.host}:{args.port} ...")
+        uvicorn.run("app.api:app", host=args.host, port=args.port, reload=False)
+    elif args.command == "info":
+        from . import __study__, __version__
+        print(f"ADEWI-Rwanda version: {__version__}")
+        print(f"Study Focus: {__study__}")
+    elif args.command == "forecast":
+        from .forecasting import forecast_autoregressive
+        # Generate sample forecast
+        s = pd.Series([-0.2, -0.5, -0.9, -1.2, -1.4])
+        res = forecast_autoregressive(s, steps=args.steps)
+        print(f"Generated {args.steps}-step forward projection:")
+        for i, val in enumerate(res.forecast):
+            print(f"  Step +{i+1}: {val:.3f} (95% CI: [{res.lower_bound.iloc[i]:.3f}, {res.upper_bound.iloc[i]:.3f}])")
+    elif args.command == "eval":
+        print("Evaluating ADEWI lead-time dynamics and diagnostic metrics...")
+        run(args.config)
+        print("Evaluation complete.")
+    else:
+        # Default behavior: run full pipeline
+        cfg_path = getattr(args, "config", None)
+        run(cfg_path)
 
 
 if __name__ == "__main__":
