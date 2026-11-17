@@ -35,6 +35,7 @@ from adewi.combined_index import compute_indices as _ci
 from adewi.config import ensure_dirs, load_config
 from adewi.data_loading import load_provincial_timeseries as _dl
 from adewi.lead_time import analyze_lead_time as _lt
+from adewi.geography import RWANDA_DISTRICTS, generate_rwanda_geojson
 from adewi.preprocessing import preprocess as _pre
 from adewi.regions import DISTRICT_CENTROIDS, DISTRICTS, load_district_table
 from adewi.run_pipeline import run
@@ -505,6 +506,21 @@ with tab_map:
     )
     fig_map.update_layout(height=420, margin=dict(t=40, b=10, l=10, r=10))
     st.plotly_chart(fig_map, use_container_width=True)
+
+    with st.expander("🌾 District Agro-Ecological Zones & Vulnerability Directory"):
+        dist_meta = [
+            {
+                "District": d.name,
+                "Province": d.province,
+                "Capital": d.capital,
+                "Agro-Ecological Zone": d.agro_zone,
+                "Drought Vulnerability": d.drought_vulnerability,
+                "Latitude": d.lat,
+                "Longitude": d.lon,
+            }
+            for d in RWANDA_DISTRICTS.values()
+        ]
+        st.dataframe(pd.DataFrame(dist_meta), use_container_width=True, hide_index=True)
 
     # Temporal Severity Strip
     st.divider()
