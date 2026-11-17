@@ -265,12 +265,13 @@ st.write("")
 # Application Tabs
 # ---------------------------------------------------------------------------
 
-tab_ts, tab_lt, tab_map, tab_sens, tab_about = st.tabs(
+tab_ts, tab_lt, tab_map, tab_sens, tab_sim, tab_about = st.tabs(
     [
         "📈 Time Series",
         "⏱️ Lead-Time Analysis",
         "🗺️ Drought Map & Spatial Explorer",
         "⚙️ Sensitivity Analysis",
+        "🔮 Scenario Simulator",
         "ℹ️ About & Methodology",
     ]
 )
@@ -675,7 +676,67 @@ with tab_sens:
         st.dataframe(pd.read_csv(sens_path), use_container_width=True, hide_index=True)
 
 # ═══════════════════════════════════════════════════════════════════════════
-# TAB 5 — About & Methodology
+# TAB 5 — Scenario Simulator
+# ═══════════════════════════════════════════════════════════════════════════
+
+with tab_sim:
+    st.subheader("Interactive 'What-If' Climate Stress Simulator")
+    st.markdown(
+        "Simulate hypothetical climate shocks (e.g. prolonged dry spells, heatwaves) "
+        "and project early-warning index response and alert severity."
+    )
+
+    sim_c1, sim_c2, sim_c3 = st.columns(3)
+    with sim_c1:
+        sim_rf = st.slider("Rainfall Anomaly (Z-score)", -3.0, 3.0, -1.5, 0.1)
+    with sim_c2:
+        sim_sm = st.slider("Soil Moisture Anomaly (Z-score)", -3.0, 3.0, -1.2, 0.1)
+    with sim_c3:
+        sim_lst = st.slider("LST Anomaly (Z-score)", -3.0, 3.0, 1.0, 0.1)
+
+    # ADEWI formula: 0.40 * Z_rf + 0.35 * Z_sm - 0.25 * Z_lst
+    sim_adewi = (0.40 * sim_rf) + (0.35 * sim_sm) - (0.25 * sim_lst)
+
+    sim_res1, sim_res2 = st.columns([1, 2])
+    with sim_res1:
+        st.metric("Projected ADEWI Score", f"{sim_adewi:.2f}")
+        if sim_adewi < -1.5:
+            st.error("🚨 Critical / Emergency Drought Alert")
+        elif sim_adewi < -1.0:
+            st.warning("⚠️ Drought Warning")
+        elif sim_adewi < -0.5:
+            st.info("ℹ️ Drought Watch")
+        else:
+            st.success("✅ Normal Moisture Conditions")
+
+    with sim_res2:
+        fig_gauge = go.Figure(
+            go.Indicator(
+                mode="gauge+number",
+                value=sim_adewi,
+                title={"text": "Simulated ADEWI Gauge"},
+                gauge={
+                    "axis": {"range": [-3.0, 3.0]},
+                    "bar": {"color": "#e74c3c" if sim_adewi < -1.0 else ("#f39c12" if sim_adewi < -0.5 else "#27ae60")},
+                    "steps": [
+                        {"range": [-3.0, -1.5], "color": "#fadbd8"},
+                        {"range": [-1.5, -1.0], "color": "#fdebd0"},
+                        {"range": [-1.0, -0.5], "color": "#fef9e7"},
+                        {"range": [-0.5, 3.0], "color": "#eafaf1"},
+                    ],
+                    "threshold": {
+                        "line": {"color": "black", "width": 3},
+                        "thickness": 0.75,
+                        "value": drought_thr,
+                    },
+                },
+            )
+        )
+        fig_gauge.update_layout(height=260, margin=dict(l=20, r=20, t=40, b=20))
+        st.plotly_chart(fig_gauge, use_container_width=True)
+
+# ═══════════════════════════════════════════════════════════════════════════
+# TAB 6 — About & Methodology
 # ═══════════════════════════════════════════════════════════════════════════
 
 with tab_about:
