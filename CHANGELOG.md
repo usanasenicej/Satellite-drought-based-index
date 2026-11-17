@@ -26,6 +26,45 @@ Follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 
 ---
 
+## [0.3.0] — 2026-11-17
+
+### Added
+- **Standardized Remote-Sensing Drought Indices**: Added `adewi.standardized_indices` implementing Kogan's Vegetation Condition Index (VCI), Temperature Condition Index (TCI), and Vegetation Health Index (VHI).
+- **SPEI & Climatic Water Balance**: Added `adewi.water_balance` computing Hargreaves/Thornthwaite potential evapotranspiration (PET) and multi-scalar SPEI.
+- **Dynamic Weight Optimization**: Added `adewi.weighting` supporting Principal Component Analysis (PCA) and Shannon Entropy Weight Method (EWM).
+- **Run-Theory Event Analytics**: Added `adewi.events` characterizing drought spells, duration, cumulative deficit, and peak intensity.
+- **ENSO/IOD & Cloud Dropout Simulation**: Enhanced `adewi.synthetic_data` with inter-annual teleconnections and sensor cloud gap corruption.
+- **Machine Learning Early-Warning Classifier**: Added `adewi.ml_early_warning` predicting drought onset 16-to-48 days in advance using RandomForest and GradientBoosting.
+- **Time-Series Forecaster**: Added `adewi.forecasting` with autoregressive AR(p) and Holt linear exponential smoothing models.
+- **Diagnostic ROC & Precision-Recall Suite**: Added `adewi.roc_evaluation` with ROC-AUC, Precision-Recall curves, and Youden's J statistic.
+- **Lead-Time Dynamics & False Alarms**: Added `adewi.delay_metrics` calculating Mean Detection Delay (MDD) and False Discovery Rate (FDR).
+- **Rwanda 30-District Geospatial Metadata**: Added `adewi.geography` with full provincial classifications, agro-ecological zones, and GeoJSON boundary generators.
+- **Spatial Zonal Statistics**: Added `adewi.spatial` with gridded raster masking and drought area fraction quantification.
+- **CHIRPS Satellite Connector & CLI**: Added `adewi.connectors.chirps` and `scripts/fetch_chirps.py` for downloading precipitation pentads.
+- **STAC Earth Observation Client**: Added `adewi.connectors.stac` supporting Sentinel-2 and MODIS search queries.
+- **FastAPI Real-Time Drought Alert REST API**: Added `app/api.py` with asynchronous endpoints for live metrics and simulations.
+- **Multi-Command CLI**: Added `run`, `eval`, `forecast`, `serve`, and `info` subcommands to the `adewi` CLI.
+- **Pipeline DAG Caching**: Added `adewi.caching` with SHA-256 fingerprinting to skip unchanged pipeline stages.
+- **Schema & Data Integrity Validator**: Added `adewi.schema` enforcing strict physical ranges and missing value limits.
+- **Structured Telemetry & Profiler**: Added `adewi.logger` providing JSON logs and execution timers.
+- **Streamlit Early Warning Alerts & Gauges**: Added real-time provincial alert badges and risk status cards in `app/streamlit_app.py`.
+- **Streamlit Agro-Ecological District Directory**: Enriched map explorer with 30-district agro-zones and vulnerability ratings.
+- **Streamlit Climate Scenario Simulator**: Added interactive 'What-If' simulator tab with dynamic gauge visualizations.
+- **Streamlit Research Data Package**: Added one-click bundle download for datasets, GeoJSON boundaries, and run reports.
+- **Comprehensive Integration Test Suite**: Added end-to-end multi-module pipeline tests in `tests/test_integration_pipeline.py`.
+- **Multi-Stage Docker & Compose Orchestration**: Added `Dockerfile` and `docker-compose.yml` for unified dashboard and API deployment.
+- **GitHub Actions Multi-OS CI Workflow**: Added `.github/workflows/ci.yml` with Linux/Windows matrix testing.
+- **Code Quality & Pre-Commit Standards**: Added `ruff.toml` and `.pre-commit-config.yaml`.
+- **Automated LaTeX & Markdown Reports**: Added `adewi.reports` generating booktabs tables and executive briefs.
+- **BibTeX Bibliography Database**: Added `paper/references.bib` with citations for remote sensing literature.
+- **Academic Manuscript Overhaul**: Updated `paper/manuscript_draft.md` with methodology, ML benchmarks, and citations.
+- **System Architecture Guide**: Added `docs/architecture.md` with comprehensive mermaid architecture diagrams.
+
+### Changed
+- Bumped version to `0.3.0` across `pyproject.toml` and `src/adewi/__init__.py`.
+
+---
+
 ## [0.2.0] — 2026-10-29
 
 ### Added
