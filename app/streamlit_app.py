@@ -245,6 +245,19 @@ col_h3.metric("Annual Mean ADEWI", f"{mean_adewi_val:.2f}")
 with col_h4:
     st.markdown(f"**Peak Drought Severity ({year}):**<br>{render_badge(worst_class)}", unsafe_allow_html=True)
 
+# Early Warning Risk Matrix Bar
+alert_color = "#e74c3c" if mean_adewi_val < -1.0 else ("#f39c12" if mean_adewi_val < -0.5 else "#27ae60")
+alert_title = "CRITICAL / WATCH ALERT" if mean_adewi_val < -1.0 else ("ELEVATED RISK" if mean_adewi_val < -0.5 else "NORMAL MOISTURE REGIME")
+st.markdown(
+    f"""
+    <div style="background-color: #f8f9fa; border-left: 6px solid {alert_color}; padding: 12px 18px; border-radius: 4px; margin: 10px 0 20px 0;">
+        <span style="font-weight: 700; color: {alert_color}; font-size: 1.05rem;">{alert_title}</span> — 
+        Latest environmental composite anomalies indicate <strong>{drought_fraction*100:.1f}%</strong> of periods experienced water stress (ADEWI &le; {drought_thr}).
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.write("")
 
 # ---------------------------------------------------------------------------
